@@ -5,8 +5,9 @@ Markdown から HTML への変換するウェブアプリケーションです�
 ## URL
 
 ## Demo
-<img width="1440" alt="スクリーンショット 2024-10-05 15 46 40" src="https://github.com/user-attachments/assets/e9ba8c02-c345-4bc0-9ff6-f833c861ee26">
-<img width="1440" alt="スクリーンショット 2024-10-05 15 46 58" src="https://github.com/user-attachments/assets/6f5c04a2-f470-4cad-afaa-d1f1b0ee470b">
+![スクリーンショット 2024-10-05 15 46 40](https://github.com/user-attachments/assets/d52f15f5-e376-4026-9e0c-e47ab37fa8f5)
+
+![スクリーンショット 2024-10-05 15 46 58](https://github.com/user-attachments/assets/fe21826a-dee8-4b24-bb0b-9deef3ee2576)
 
 ## 概要
 エディターにMarkdownを入力して"HTMLを表示"か"HTMLをダウンロード"を選択して"変換"ボタンを押してください。
