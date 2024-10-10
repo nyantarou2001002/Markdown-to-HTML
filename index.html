@@ -8,19 +8,33 @@
         /* エディタの表示領域を調整 */
         #editor {
             height: 400px;
-            width: 100%;
+            width: 49%;
             border: 1px solid #ccc;
+            float: left;
+        }
+        /* プレビューの表示領域を調整 */
+        #preview {
+            height: 400px;
+            width: 49%;
+            border: 1px solid #ccc;
+            overflow: auto;
+            float: right;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .clear {
+            clear: both;
         }
     </style>
-    <!-- CDN から Monaco Editor を読み込む -->
-    <script src="https://unpkg.com/monaco-editor@latest/min/vs/loader.js"></script>
 </head>
 <body>
 
 <h1>Markdown to HTML Converter</h1>
 
-<!-- Monaco Editor を表示するためのエリア -->
+<!-- エディタとプレビューエリア -->
 <div id="editor"></div>
+<div id="preview"></div>
+<div class="clear"></div>
 
 <!-- 変換するためのフォーム -->
 <form action="convert.php" method="post" id="markdownForm">
@@ -32,29 +46,74 @@
     <button type="submit" onclick="submitForm()">変換</button>
 </form>
 
+<!-- CDN から Monaco Editor を読み込む -->
+<script src="https://unpkg.com/monaco-editor@latest/min/vs/loader.js"></script>
+
 <script>
-    // Monaco Editor の設定と読み込み
-    require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@latest/min/vs' }});
+    document.addEventListener('DOMContentLoaded', function() {
+        // Monaco Editor の設定と読み込み
+        require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@latest/min/vs' }});
 
-    require(['vs/editor/editor.main'], function() {
-        // Monaco Editor のインスタンスを作成
-        window.editor = monaco.editor.create(document.getElementById('editor'), {
-            value: '# ここに Markdown を入力してください\n', // 初期テキスト
-            language: 'markdown',   // 言語モードを Markdown に設定
-            theme: 'vs-dark'        // ダークテーマを使用（'vs-light' に変更可能）
+        require(['vs/editor/editor.main'], function() {
+            // Monaco Editor のインスタンスを作成
+            window.editor = monaco.editor.create(document.getElementById('editor'), {
+                value: '# ここに Markdown を入力してください\n', // 初期テキスト
+                language: 'markdown',   // 言語モードを Markdown に設定
+                theme: 'vs-dark'        // ダークテーマを使用
+            });
+
+            // エディタの内容が変更されたときにプレビューを更新
+            window.editor.onDidChangeModelContent(function() {
+                updatePreview();
+            });
+
+            // 初期表示のプレビューを更新
+            updatePreview();
         });
-    });
 
-    // フォーム送信時にエディタの内容を取得して送信する
-    function submitForm() {
-        const markdownText = window.editor.getValue();  // Monaco Editor の内容を取得
-        const form = document.getElementById('markdownForm');
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'markdown';
-        hiddenInput.value = markdownText;
-        form.appendChild(hiddenInput);  // エディタ内容をフォームに追加
-    }
+        // シンプルな Markdown から HTML への変換関数
+        function simpleMarkdownToHTML(markdown) {
+            let html = markdown;
+
+            // 見出し (例: ## 見出し)
+            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+
+            // リスト (例: - アイテム)
+            html = html.replace(/^\- (.*$)/gim, '<ul><li>$1</li></ul>');
+
+            // 強調 (太字と斜体)
+            html = html.replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>');
+            html = html.replace(/\*(.*)\*/gim, '<em>$1</em>');
+
+            // コードブロック (例: `コード`)
+            html = html.replace(/`(.*?)`/gim, '<code>$1</code>');
+
+            // 改行を <br> に変換
+            html = html.replace(/\n/gim, '<br>');
+
+            return html.trim();  // 最終的に余計な空白を削除
+        }
+
+        // プレビューを更新する関数
+        function updatePreview() {
+            const markdownText = window.editor.getValue();
+            const html = simpleMarkdownToHTML(markdownText);  // Markdown を HTML に変換
+            document.getElementById('preview').innerHTML = html;  // 変換結果をプレビューに反映
+        }
+
+        // フォーム送信時にエディタの内容を取得して送信する
+        window.submitForm = function() {
+            const markdownText = window.editor.getValue();  // Monaco Editor の内容を取得
+            const form = document.getElementById('markdownForm');
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'markdown';
+            hiddenInput.value = markdownText;
+            form.appendChild(hiddenInput);  // エディタ内容をフォームに追加
+        }
+    });
 </script>
 
 </body>
