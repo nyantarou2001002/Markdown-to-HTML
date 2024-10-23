@@ -20,7 +20,7 @@ Markdown から HTML への変換するウェブアプリケーションです�
 
 ## 使用技術
 - フロントエンド
-  - 使用言語： HTML, Javascript
+  - 使用言語： HTML, Javascript, CSS, TailwindCSS
   - コードエディタ: Monaco Editor
 
 - バックエンド
